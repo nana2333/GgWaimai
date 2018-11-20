@@ -21,7 +21,7 @@
               </button>
             </section>
             <section class="login_verification">
-              <input type="tel" maxlength="8" placeholder="验证码">
+              <input type="tel" maxlength="8" placeholder="验证码" v-model="code">
             </section>
             <section class="login_hint">
               温馨提示：未注册硅谷外卖帐号的手机号，登录时将自动注册，且代表已同意
@@ -31,22 +31,25 @@
           <div :class="{on:!loginWay}">
             <section>
               <section class="login_message">
-                <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名">
+                <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名" v-model="name">
               </section>
               <section class="login_verification">
-                <input :type="isShowPwd?'text':'password'" maxlength="8" placeholder="密码">
+                <input :type="isShowPwd?'text':'password'" maxlength="8" placeholder="密码" v-model="pwd">
                 <div class="switch_button off" @click="isShowPwd=!isShowPwd" :class="isShowPwd ? 'on' : 'off'">
                   <div class="switch_circle" :class="{right:isShowPwd}"></div>
                   <span class="switch_text">{{isShowPwd ? '...' : ''}}</span>
                 </div>
               </section>
               <section class="login_message">
-                <input type="text" maxlength="11" placeholder="验证码">
-                <img class="get_verification" src="./images/captcha.svg" alt="captcha">
+                <input type="text" maxlength="11" placeholder="验证码" v-model="captcha">
+                <img ref="captcha" class="get_verification"
+                     src="http://localhost:5000/captcha"
+                     alt="captcha"
+                     @click="updateCaptcha">
               </section>
             </section>
           </div>
-          <button class="login_submit">登录</button>
+          <button class="login_submit" @click.prevent="login">登录</button>
         </form>
         <a href="javascript:;" class="about_us">关于我们</a>
       </div>
@@ -58,11 +61,17 @@
 </template>
 
 <script>
+  import {reqSendCode, reqPwdLogin, reqSmsLogin} from '../../api'
+  import {Toast, MessageBox } from 'mint-ui'
   export default {
     data(){
       return{
         loginWay:true,
         phone:'',
+        code:'',
+        name:'',
+        pwd:'',
+        captcha:'',
         computeTime:0,
         isShowPwd:false
       }
@@ -70,11 +79,12 @@
     computed:{
       isRightPhone(){
         return /^1\d{10}$/.test(this.phone)
-      }
+      },
+
     },
 
     methods:{
-      sendCode(){
+      async sendCode(){
         this.computeTime=60
         const interalId=setInterval(()=>{
           this.computeTime--
@@ -83,6 +93,51 @@
             clearInterval(interalId)
           }
         },1000)
+        const result=await reqSendCode(this.phone)
+        if(result.code===0){
+          Toast('短信已发送')
+        }else {
+          this.computeTime=0
+          MessageBox.alert(result.msg,'提示')
+        }
+      },
+      updateCaptcha(){
+        this.$refs.captcha.src = 'http://localhost:5000/captcha?time='+Date.now()
+      },
+      async login(){
+       //前台表单验证
+        const {phone,code,name,pwd,captcha,loginWay}=this
+        let result;
+        if(loginWay) {// 短信
+          if (!this.isRightPhone) {
+            return MessageBox.alert('必须指定正确的手机号')
+          } else if (!/^\d{6}$/.test(code)) {
+            return MessageBox.alert('验证码必须是6位数字')
+          }
+          // 发登陆的请求
+          result = await reqSmsLogin(phone, code)
+          this.computeTime = 0
+        }else{
+          if(!name){
+            return MessageBox.alert('必须指定用户名')
+          }else if(!pwd){
+            return MessageBox.alert('请输入正确的密码')
+          }else if(!captcha){
+            return MessageBox.alert('请输入正确的验证码')
+          }
+          //发登录的请求
+          result = await reqPwdLogin({name,pwd,captcha})
+          if(result.code!==0){
+            this.updateCaptcha()
+        }
+      }
+
+        if(result.code===0){//登录成功
+          this.$store.dispatch('saveUser',result.data)
+          this.$router.replace('/profile')
+        }else {
+          MessageBox.alert('登录失败')
+        }
       }
     }
   }

@@ -3,6 +3,7 @@
  */
 import Vue from 'vue'
 import App from './App.vue'
+import {Button} from 'mint-ui'
 
 import store from './store'
 import router from './router'

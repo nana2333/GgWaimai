@@ -4,12 +4,14 @@
 import {
   reqAddress,
   reqShops,
-  reqFoodCategorys
+  reqFoodCategorys,
+  reqUserInfo
 } from '../api'
 import {
   RECEIVE_SHOPS,
   RECEIVE_CATEGORYS,
-  RECEIVE_ADDRESS
+  RECEIVE_ADDRESS,
+  RECEIVE_USER
 } from './mutation-types'
 
 export default {
@@ -21,6 +23,7 @@ export default {
     const result = await reqAddress(longitude, latitude)
     // 根据结果提交mutation
     if(result.code===0) {
+      // console.log(result.data);
       const address = result.data
       commit(RECEIVE_ADDRESS, {address})
     }
@@ -48,5 +51,16 @@ export default {
       commit(RECEIVE_SHOPS, {shops})
     }
   },
-  
+   saveUser ({commit, user}) {
+      commit(RECEIVE_USER, {user})
+    },
+  async getUserInfo ({commit}) {
+    // 发ajax请求
+    const result = await reqUserInfo()
+    // 根据结果提交mutation
+    if(result.code===0) {
+      const user = result.data
+      commit(RECEIVE_USER, {user})
+    }
+  },
 }
