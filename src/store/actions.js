@@ -21,7 +21,8 @@ import {
   RECEIVE_RATINGS,
   RECEIVE_GOODS,
   ADD_FOOD_COUNT,
-  REDUCE_FOOD_COUNT
+  REDUCE_FOOD_COUNT,
+  CLEAR_CART
 } from './mutation-types'
 
 export default {
@@ -119,5 +120,7 @@ export default {
       commit(REDUCE_FOOD_COUNT, {food})
     }
   },
-  
+  clearCart({commit}){
+    commit(CLEAR_CART)
+  }
 }
