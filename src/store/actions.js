@@ -5,24 +5,35 @@ import {
   reqAddress,
   reqShops,
   reqFoodCategorys,
+
+  reqUserInfo
+
   reqUserInfo,
   reqLogout,
   reqShopGoods,
   reqShopRatings,
   reqShopInfo
+
 } from '../api'
 import {
   RECEIVE_SHOPS,
   RECEIVE_CATEGORYS,
   RECEIVE_ADDRESS,
+
+  RECEIVE_USER
+
   RECEIVE_USER,
   RESET_USER,
   RECEIVE_INFO,
   RECEIVE_RATINGS,
   RECEIVE_GOODS,
   ADD_FOOD_COUNT,
+
   REDUCE_FOOD_COUNT,
   CLEAR_CART
+
+  REDUCE_FOOD_COUNT
+
 } from './mutation-types'
 
 export default {
@@ -33,6 +44,10 @@ export default {
     const {longitude, latitude} = state
     const result = await reqAddress(longitude, latitude)
     // 根据结果提交mutation
+
+    if(result.code===0) {
+      // console.log(result.data);
+
     if (result.code === 0) {
       const address = result.data
       commit(RECEIVE_ADDRESS, {address})
@@ -61,6 +76,15 @@ export default {
       commit(RECEIVE_SHOPS, {shops})
     }
   },
+   saveUser ({commit, user}) {
+      commit(RECEIVE_USER, {user})
+    },
+  async getUserInfo ({commit}) {
+    // 发ajax请求
+    const result = await reqUserInfo()
+    // 根据结果提交mutation
+    if(result.code===0) {
+
   
   // 保存user的同步action
   saveUser({commit}, user) {
@@ -71,10 +95,13 @@ export default {
   async getUserInfo ({commit}) {
     const result = await reqUserInfo()
     if (result.code === 0) {
+
       const user = result.data
       commit(RECEIVE_USER, {user})
     }
   },
+
+
   
   // 退出登陆的异步action
   async logout({commit}) {
@@ -120,7 +147,12 @@ export default {
       commit(REDUCE_FOOD_COUNT, {food})
     }
   },
+
   clearCart({commit}){
-    commit(CLEAR_CART)
+    commit(CLEAR_CART
   }
+
+  
+
+
 }

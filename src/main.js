@@ -4,7 +4,12 @@
 import Vue from 'vue'
 import App from './App.vue'
 import {Button} from 'mint-ui'
+
 import Split from './components/Split/Split.vue'
+
+
+
+
 import store from './store'
 import router from './router'
 import TopHeader from './components/TopHeader/TopHeader.vue'

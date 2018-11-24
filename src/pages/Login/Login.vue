@@ -34,16 +34,27 @@
                 <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名" v-model="name">
               </section>
               <section class="login_verification">
+<<<<<<< HEAD
+                <input :type="isShowPwd?'text':'password'" maxlength="8" placeholder="密码" v-model="pwd">
+                <div class="switch_button off" @click="isShowPwd=!isShowPwd" :class="isShowPwd ? 'on' : 'off'">
+                  <div class="switch_circle" :class="{right:isShowPwd}"></div>
+                  <span class="switch_text">{{isShowPwd ? '...' : ''}}</span>
+=======
                 <input :type="isShowPwd ? 'text' : 'password'" maxlength="8" placeholder="密码" v-model="pwd">
                 <div class="switch_button" @click="isShowPwd=!isShowPwd" :class="isShowPwd ? 'on' : 'off'">
                   <div class="switch_circle" :class="{right: isShowPwd}"></div>
                   <span class="switch_text">{{isShowPwd ? 'abc' : ''}}</span>
+>>>>>>> zn
                 </div>
               </section>
               <section class="login_message">
                 <input type="text" maxlength="11" placeholder="验证码" v-model="captcha">
+<<<<<<< HEAD
+                <img ref="captcha" class="get_verification"
+=======
                 <img ref="captcha"
                      class="get_verification"
+>>>>>>> zn
                      src="http://localhost:5000/captcha"
                      alt="captcha"
                      @click="updateCaptcha">
@@ -65,6 +76,18 @@
   import {reqSendCode, reqPwdLogin, reqSmsLogin} from '../../api'
   import {Toast, MessageBox } from 'mint-ui'
   export default {
+<<<<<<< HEAD
+    data(){
+      return{
+        loginWay:true,
+        phone:'',
+        code:'',
+        name:'',
+        pwd:'',
+        captcha:'',
+        computeTime:0,
+        isShowPwd:false
+=======
     data () {
       return {
         loginWay: true, // true: 短信登陆, false: 密码登陆
@@ -75,27 +98,56 @@
         captcha: '', // 图形验证码
         computeTime: 0, // 计时剩余时间
         isShowPwd: false, // 是否显示密码
+>>>>>>> zn
       }
     },
 
     computed: {
       isRightPhone () {
         return /^1\d{10}$/.test(this.phone)
-      }
+      },
+
     },
 
+<<<<<<< HEAD
+    methods:{
+      async sendCode(){
+        this.computeTime=60
+        const interalId=setInterval(()=>{
+=======
     methods: {
       // 发送验证
       async sendCode () {
         // 开始倒计时
         this.computeTime = 60
         const interalId = setInterval(() => {
+>>>>>>> zn
           this.computeTime--
           if(this.computeTime<=0) {
             this.computeTime = 0
             // 清除定时器
             clearInterval(interalId)
           }
+<<<<<<< HEAD
+        },1000)
+        const result=await reqSendCode(this.phone)
+        if(result.code===0){
+          Toast('短信已发送')
+        }else {
+          this.computeTime=0
+          MessageBox.alert(result.msg,'提示')
+        }
+      },
+      updateCaptcha(){
+        this.$refs.captcha.src = 'http://localhost:5000/captcha?time='+Date.now()
+      },
+      async login(){
+       //前台表单验证
+        const {phone,code,name,pwd,captcha,loginWay}=this
+        let result;
+        if(loginWay) {// 短信
+          if (!this.isRightPhone) {
+=======
         }, 1000)
 
         // 发ajax请求, 发送短信验证码
@@ -122,12 +174,36 @@
         let result
         if(loginWay) { // 短信
           if(!this.isRightPhone) {
+>>>>>>> zn
             return MessageBox.alert('必须指定正确的手机号')
           } else if (!/^\d{6}$/.test(code)) {
             return MessageBox.alert('验证码必须是6位数字')
           }
           // 发登陆的请求
           result = await reqSmsLogin(phone, code)
+<<<<<<< HEAD
+          this.computeTime = 0
+        }else{
+          if(!name){
+            return MessageBox.alert('必须指定用户名')
+          }else if(!pwd){
+            return MessageBox.alert('请输入正确的密码')
+          }else if(!captcha){
+            return MessageBox.alert('请输入正确的验证码')
+          }
+          //发登录的请求
+          result = await reqPwdLogin({name,pwd,captcha})
+          if(result.code!==0){
+            this.updateCaptcha()
+        }
+      }
+
+        if(result.code===0){//登录成功
+          this.$store.dispatch('saveUser',result.data)
+          this.$router.replace('/profile')
+        }else {
+          MessageBox.alert('登录失败')
+=======
 
           // 停止倒计时
           this.computeTime = 0
@@ -155,6 +231,7 @@
           this.$router.replace('/profile')
         } else { // 失败
           MessageBox.alert('登陆失败')
+>>>>>>> zn
         }
       }
     }

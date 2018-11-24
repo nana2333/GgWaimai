@@ -6,14 +6,21 @@ import {
   RECEIVE_ADDRESS,
   RECEIVE_CATEGORYS,
   RECEIVE_SHOPS,
+
+  RECEIVE_USER
+
   RECEIVE_USER,
   RESET_USER,
   RECEIVE_GOODS,
   RECEIVE_RATINGS,
   RECEIVE_INFO,
   ADD_FOOD_COUNT,
+
   REDUCE_FOOD_COUNT,
   CLEAR_CART
+
+  REDUCE_FOOD_COUNT
+
 } from './mutation-types'
 
 export default {
@@ -28,6 +35,10 @@ export default {
   [RECEIVE_SHOPS] (state, {shops}) {
     state.shops = shops
   },
+
+  [RECEIVE_USER] (state, {user}) {
+    state.user = user
+
   
   [RECEIVE_USER] (state, {user}) {
     state.user = user
@@ -63,6 +74,7 @@ export default {
         state.cartFoods.splice(state.cartFoods.indexOf(food), 1)
       }
     }
+
   },
   
   [CLEAR_CART](state) {
@@ -71,4 +83,6 @@ export default {
     //清空购物车数组
     state.cartFoods = []
   },
+
+  }
 }
